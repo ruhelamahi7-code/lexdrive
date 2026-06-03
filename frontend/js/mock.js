@@ -32,28 +32,47 @@ const CHAT_RESPONSES = {
 
   "speeding": `Speeding fines under Motor Vehicles (Amendment) Act 2019:\n\n**Light Motor Vehicle (car):**\n- First offence: ₹1,000–₹2,000\n- Repeat: ₹2,000–₹4,000\n\n**Heavy Vehicle:**\n- First offence: ₹2,000–₹4,000\n- Repeat: ₹4,000–₹10,000\n\nSpeed limits vary by road type:\n- Urban roads: 50 km/h\n- State highways: 80 km/h\n- National highways: 100 km/h (car), 80 km/h (heavy)\n\nExpress cameras and speed guns are deployed on most highways.`,
 
-  "default": `Thank you for your question about Indian traffic law. Based on the Motor Vehicles (Amendment) Act 2019 and relevant state-level regulations, here is what you need to know:\n\nThe Motor Vehicles Act 2019 significantly increased penalties for traffic violations to improve road safety. Key principles:\n\n- **All challans must be issued in writing** — verbal fines are not valid\n- **Digital payments are accepted** — you don't need to carry cash\n- **DigiLocker documents are valid** — no need for physical originals\n- **You have the right to contest** any challan in court within 60 days\n\nFor a more specific answer, please mention the exact violation or state you are asking about.`
+  "default": `Thank you for your question about Indian traffic law. Based on the Motor Vehicles (Amendment) Act 2019 and relevant state-level regulations, here is what you need to know:\n\nThe Motor Vehicles Act 2019 significantly increased penalties for traffic violations to improve road safety. Key principles:\n\n- **All challans must be issued in writing** — verbal fines are not valid\n- **Digital payments are accepted** — you don't need to carry cash\n- **DigiLocker documents are valid** — no need for physical originals\n- **You have the right to contest** any challan in court within 60 days\n\nFor a more specific answer, please mention the exact violation or state you are asking about.`,
+
+  "sl_general": `Sri Lanka traffic laws are governed by the **Motor Traffic Act (Chapter 203)** and enforced by the **Sri Lanka Police Traffic Division**.\n\nKey facts:\n- Fines are in **Sri Lankan Rupees (LKR)**\n- Legal BAC limit: **80 mg per 100 ml of blood**\n- Speed limit: **50 km/h urban | 70 km/h rural | 100 km/h expressway**\n- Helmet mandatory for both rider and pillion\n\nFines can be paid at any **DMT office** or online via the DMT portal.`,
+
+  "sl_drunk driving": `Drunk driving in Sri Lanka under **Section 151, Motor Traffic Act**:\n\n**First offence:** LKR 25,000 + up to 2 years imprisonment\n**Repeat offence:** LKR 50,000 + up to 5 years + licence cancellation\n\nBAC limit is 80 mg/100 ml. Refusing a breath test is treated as a positive result. Licence is suspended on the spot.`,
+
+  "sl_helmet": `Helmet rules in Sri Lanka:\n\n**Mandatory for:** Both rider AND pillion\n**Standard:** SLS (Sri Lanka Standards) certified helmet required\n**Fine:** LKR 1,000–2,500\n\nNon-SLS helmets are treated same as no helmet. Look for the SLS mark inside.`,
+
+  "sl_speeding": `Speed limits in Sri Lanka:\n- Urban: 50 km/h\n- Rural: 70 km/h\n- Expressways: 100 km/h\n\n**Fines:**\n- Up to 20 km/h over: LKR 2,500\n- 20–40 km/h over: LKR 5,000\n- 40+ km/h over: LKR 10,000 + court\n\nSpeed cameras active on Southern Expressway and Colombo–Kandy highway.`,
+
+  "sl_documents": `Documents required while driving in Sri Lanka:\n\n1. **Driving Licence** (DMT issued)\n2. **Vehicle Revenue Licence** (annual)\n3. **Insurance Certificate** (third-party minimum)\n4. **Emission Test Certificate** (VET sticker)\n5. **Registration Book**\n\nForeign visitors can use an **IDP** for up to 3 months.`,
+
+  "sl_rights": `Your rights when stopped by traffic police in Sri Lanka:\n\n1. **Right to see officer ID** on request\n2. **Right to a written notice** — all fines must be official\n3. **Right to contest** in Magistrate's Court\n4. **No unofficial payments** — always get a receipt\n5. **Right to contact a lawyer** for serious offences\n\nSri Lanka Police non-emergency line: **118**`,
 };
 
 function getMockChatResponse(message, location) {
   const msg = message.toLowerCase();
-  let reply = CHAT_RESPONSES["default"];
+  const isSriLanka = location === "Sri Lanka" ||
+    msg.includes("sri lanka") || msg.includes("colombo") ||
+    msg.includes("kandy") || msg.includes("lkr");
 
-  if (msg.includes("red light") || msg.includes("signal")) reply = CHAT_RESPONSES["red light"];
-  else if (msg.includes("mobile") || msg.includes("phone")) reply = CHAT_RESPONSES["mobile phone"];
-  else if (msg.includes("right") || msg.includes("stop") || msg.includes("police")) reply = CHAT_RESPONSES["rights"];
-  else if (msg.includes("document") || msg.includes("licence") || msg.includes("rc") || msg.includes("insurance")) reply = CHAT_RESPONSES["documents"];
-  else if (msg.includes("drunk") || msg.includes("alcohol") || msg.includes("dui")) reply = CHAT_RESPONSES["drunk driving"];
-  else if (msg.includes("helmet")) reply = CHAT_RESPONSES["helmet"];
-  else if (msg.includes("seiz")) reply = CHAT_RESPONSES["seizure"];
-  else if (msg.includes("speed")) reply = CHAT_RESPONSES["speeding"];
+  let reply;
 
-  if (location && location !== "") {
-    reply += `\n\n*📍 Note: This information is specifically applicable to **${location}**. State-level amendments may apply.*`;
+  if (isSriLanka) {
+    if (msg.includes("drunk") || msg.includes("alcohol")) reply = CHAT_RESPONSES["sl_drunk driving"];
+    else if (msg.includes("helmet")) reply = CHAT_RESPONSES["sl_helmet"];
+    else if (msg.includes("speed")) reply = CHAT_RESPONSES["sl_speeding"];
+    else if (msg.includes("document") || msg.includes("licence")) reply = CHAT_RESPONSES["sl_documents"];
+    else if (msg.includes("right") || msg.includes("police")) reply = CHAT_RESPONSES["sl_rights"];
+    else reply = CHAT_RESPONSES["sl_general"];
+  } else {
+    if (msg.includes("red light") || msg.includes("signal")) reply = CHAT_RESPONSES["red light"];
+    else if (msg.includes("mobile") || msg.includes("phone")) reply = CHAT_RESPONSES["mobile phone"];
+    else if (msg.includes("right") || msg.includes("stop") || msg.includes("police")) reply = CHAT_RESPONSES["rights"];
+    else if (msg.includes("document") || msg.includes("licence")) reply = CHAT_RESPONSES["documents"];
+    else if (msg.includes("drunk") || msg.includes("alcohol")) reply = CHAT_RESPONSES["drunk driving"];
+    else if (msg.includes("helmet")) reply = CHAT_RESPONSES["helmet"];
+    else if (msg.includes("seiz")) reply = CHAT_RESPONSES["seizure"];
+    else if (msg.includes("speed")) reply = CHAT_RESPONSES["speeding"];
+    else reply = CHAT_RESPONSES["default"];
   }
-
-  return { reply };
-}
 
 /* ══════════════════════════════════════
    MOCK DATA — /simulate
@@ -358,4 +377,5 @@ async function apiCompare(violation, states) {
     body: JSON.stringify({ violation, states })
   });
   return res.json();
+}
 }
